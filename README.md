@@ -1,6 +1,6 @@
 LPIC102-500 EXAM NOTES - David Galera, February 2025
 
-- [USERFUL COMMANDS](#userful-commands)
+- [USEFUL COMMANDS](#useful-commands)
 - [105.1](#1051)
 - [MANAGING USERS](#managing-users)
 - [SCHEDULING JOBS](#scheduling-jobs)
@@ -17,8 +17,12 @@ LPIC102-500 EXAM NOTES - David Galera, February 2025
 - [OPEN SSH](#open-ssh)
 - [WINDOWS](#windows)
 - [NETWORKING](#networking)
+- [IP COMMAND](#ip-command)
+- [NETWORK MANAGER](#network-manager)
+- [DNS Client](#dns-client)
+- [LEGACY NET-TOOLS (DEPRECATED by iproute2)](#legacy-net-tools-deprecated-by-iproute2)
 
-## USERFUL COMMANDS
+## USEFUL COMMANDS
 - `sudo find /etc -name "ntp.conf" -exec ls -l {} ";"`
 - `echo $PATH | tr : "\n"`
 - `systemctl list-units --state active --type service`
@@ -288,9 +292,12 @@ xauth utility displays the authorization information used when connecting to a r
 **Modules section** in an X11 configuration handles which device drivers to load
 
 ## NETWORKING
+- /etc/sysconfig/network-scripts/
+- /etc/network/interfaces
+- /etc/netplan/
+- /etc/sysconfig/network
 - **Broadcasting**: Send a packet to ALL devices in the network
 - **Multicasting**: Send a packet to MULTIPLE devices in the network
-
 - 10.0.0.0/8
 - 172.16.0.0/12
 - 192.168.0.0/16
@@ -307,3 +314,54 @@ xauth utility displays the authorization information used when connecting to a r
 - Port 25 # SMTP
 - 110 # POP3
 - 514 UDP # syslog
+
+## IP COMMAND
+ip command objects:
+- **address** show or modifies network interface addresses
+- **link** displays or controls network interfaces
+- **route** shows or modifies the kernel routing tables (built at boot time)
+  
+- `ip -br addr show`
+- `ip -br a show eth0` displays only eth0 interface
+- `ip -s a show eth0` displays interface statistics
+- `ip -br link show` displays MAC addr for interfaces
+- `ip route` route table, default -> Gateway
+- `ip a add <CIDR> dev eth0` add a new ip to the network interface
+- `ip a del <CIDR> dev eth0` del a new ip in the network interface
+- `sudo ip link set eth0 down` brings the interface down
+- `sudo ip link set eth0 up` brings the interface up
+- `sudo ip route delete default` delete default Gateway
+- `sudo ip route add default via 172.30.208.1` adds a route to default gateway (172.30.208.1)
+
+## NETWORK MANAGER
+- `nmcli general` status
+- `nmcli gen` same
+- `nmcli -p conn show` show connection profiles
+- `nmcli d show` NICs info
+- `nmcli conn modify` add a new ip
+
+## DNS Client
+- `hostnamectl` displays hostname
+- `hostname set-hostname <new>` change hostname
+- `/etc/resolv.conf` contains the ip of the name server, you can have up to 3 ips in `/etc/resolv.conf`
+- `/etc/nsswitch.conf` defines how queries (lookup order) are handled e.g. hosts:	files dns
+- `systemd-resolved` -> dns client, etc/systemd/resolved.conf # daemon configuration file
+- `systemd-resolve www.google.com` shows time resolution
+- `systemd-resolve --statistics`
+
+## LEGACY NET-TOOLS (DEPRECATED by iproute2)
+- `ifconfig`
+- `route` similar to `netstat -r`
+- `netstat -r` displays routing tables, replaced by ip route
+- `netstat -a` displays NIC ports and UNIX sockets opened
+- `netstat -s` displays NIC statistics (packets send/received by protocol), replaced by nc
+- `netstat -i` kernel interface table, packet info
+- `arp` replaced by ip neigh
+- `nc -l 8001` netcat, listen traffic (l) port8001
+- `ss -s` socket statistics
+- `traceroute -nI <IP>` dont display host
+- `tracepath` main difference is that displays mtu (max transmisión unit)
+- `hostname <newname>` changes hostname
+- `getent hosts` displays `/etc/hosts`
+- `host -a www.google.com` DNS resolution, queries dns servers to get IP. -a provides resolution time
+- `dig @1.1.1.1 www.lpi.org` DNS resolution, querying 1.1.1.1 name server
