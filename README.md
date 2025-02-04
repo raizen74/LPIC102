@@ -21,6 +21,7 @@ LPIC102-500 EXAM NOTES - David Galera, February 2025
 - [NETWORK MANAGER](#network-manager)
 - [DNS Client](#dns-client)
 - [LEGACY NET-TOOLS (DEPRECATED by iproute2)](#legacy-net-tools-deprecated-by-iproute2)
+- [EXAM](#exam)
 
 ## USEFUL COMMANDS
 - `sudo find /etc -name "ntp.conf" -exec ls -l {} ";"`
@@ -28,6 +29,7 @@ LPIC102-500 EXAM NOTES - David Galera, February 2025
 - `systemctl list-units --state active --type service`
 - `ntpdate pool.ntp.org` Refresh system clock
 - `shutdown -h now` Halt the system
+- `gpasswd -a user devs` adds user to devs group
 
 ## 105.1
 `set` displays all environment variables, user variables and functions
@@ -365,3 +367,60 @@ ip command objects:
 - `getent hosts` displays `/etc/hosts`
 - `host -a www.google.com` DNS resolution, queries dns servers to get IP. -a provides resolution time
 - `dig @1.1.1.1 www.lpi.org` DNS resolution, querying 1.1.1.1 name server
+
+## EXAM 
+`sudo find /etc -name "locale" -print`
+
+`useradd -m` # creates a new user's home dir and provisions with skel files
+
+`SPICE` proto Access video card output of a VM
+
+`NetworkManager` can be configured to use the distro NIC config and by default does not change config of NI already configured
+
+display managers like `XDM` and `KMD` -> Handle user login and prepares desktop environment for the user
+
+`XDM` is the default graphical login manager that comes with vanilla X11. Default wallpaper -> `/etc/X11/xdm/Xsetup` 
+
+content in `xorg.conf` (X11 config file) in the section "SectionName" is placed between a line cointaining Section "SectionName" and a line containing EndSection
+
+`xwininfo` shows current color Depth of the X Server, investigates properties for a particular window in X
+
+`.bashrc` and `.bash_pro` affect the behavior of the Bash Shell
+
+`env -u FOO./myscript` suppresses FOO environment var for the execution of myscript
+
+`ssh-agent` preloads and manages keys
+
+The default route is only used if there is not a more specific route to a destination host or network
+
+`GOK` -> on-screen keyboard
+
+`ssh -p 2222 example.com`, `ssh -o Port=2222 example.com` connect to a specific ssh port (e.g. 2222)
+
+SPICE:
+- Lets you connect local USB into a remote app
+- Downloads and installs local apps from a remote machine
+
+`export VARIABLE` make it available to subshells
+
+/`etc/xinetd.conf` enable/disable network services
+
+display NIC eth0 bytes transmitted -> `ifconfig eth0` and `ip -s link show eth0`
+
+if `cron.allow` and `cron.deny` do not exist the behavior depends on the distro. On most distros only root user can create cron Jobs, in some distros all users can create cron Jobs.
+
+- `test -z` # test if a variable is empty (true)
+- `test -n` # test if there is content in the string or string variable
+- `test -x` # test if file is executable by user
+
+`hostnamectl set-hostname` modern systems
+
+`hostname newname` old systems
+
+nmcli network connectivity: none, portal, limited, full, unknown
+
+`traceroute` sends **UDP** packets
+
+`ssh -L 4672:www.example.com:80` localhost forward local port 4672
+
+`lprm 5` removes job 5, the printer name is not required
