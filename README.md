@@ -30,6 +30,9 @@ LPIC102-500 EXAM NOTES - David Galera, February 2025
 - `ntpdate pool.ntp.org` Refresh system clock
 - `shutdown -h now` Halt the system
 - `gpasswd -a user devs` adds user to devs group
+- `export CDPATH=$(cd && ls -d */ | sed -e 's@^@$HOME/@' -e 's@/$@@' \
+        | tr ' ' ':' | xargs -I@ bash -c 'eval echo $HOME:@:..:/')`
+- `systemd-analyze time`
 
 ## 105.1
 `set` displays all environment variables, user variables and functions
@@ -53,6 +56,8 @@ LPIC102-500 EXAM NOTES - David Galera, February 2025
 `/etc/skel/` new users skeleton
 
 `/bin/nologin` or `/bin/false` in passwd file -> user is not allowed to login
+
+`useradd -m` # creates a new user's home dir and provisions with skel files
 
 `usermod -c "GECOS" David` modifies the GECOS field in passwd
 
@@ -108,7 +113,7 @@ While anacron can handle daily, monthly and yearly jobs, **it does not handle jo
 
 Output from transient timers go to the journal
 
-`sudo systemd-run --on-calendar="*-*-* 15:00:00" COMMAND` # Schedule a transient timer job
+`sudo systemd-run --on-calendar="*-*-* 15:00:00" COMMAND` Schedule a transient timer job
 
 `systemd daemon-reload`
 
@@ -205,6 +210,8 @@ To configure a printer you can Access a web browser on IP:631 or use `lpadmin` c
 
 `lprm -P` older command
 
+`lprm 5` removes job 5, the printer name is not required
+
 `cupsctl` utility allows you to check (and modify) the CUPS daemon's configuration
 
 ## SECURITY
@@ -267,14 +274,23 @@ Memorize the facility numbers for each service
 
 `ssh-copy-id -i <key path> user@remotehost` adds the key pair to ~/.ssh/authorized_keys file in the remote host, passphrase is not required
 
+`ssh-agent` preloads and manages keys  
+
 `ssh-agent /bin/bash` execute the agent
 
 `ssh-add <key path>` adds key to the agent, passphrase key required. While the agent is running you can ssh into remote machine
 
-`ssh -X user@remotehost` establish a remote tunnel for graphic application output. The remote system must have 'X11Forwarding yes' in its OpenSSH configuration file, which is typically the /etc/ssh/sshd_config file
+`ssh -X user@remotehost` establish a remote tunnel for graphic application output. The remote system must have **X11Forwarding yes** in its OpenSSH configuration file, which is typically the `/etc/ssh/sshd_config` file
+
+`ssh -p 2222 example.com`, `ssh -o Port=2222 example.com` connect to a specific ssh port (e.g. 2222)
+
+`ssh -L 4672:www.example.com:80` localhost forward local port 4672
 
 ## WINDOWS
-`/etc/X11/xorg.conf.d`
+SPICE:
+- Lets you connect local USB into a remote app
+- SPICE facilitates access to graphical applications on a remote server by providing high-quality, low-latency video and audio streaming capabilities for a smooth user experience
+- `SPICE` proto Access video card output of a VM
 
 After changing any of the configuration files you have to restart the service:
 - `service <displaymanagername> restart` SysVinit
@@ -286,12 +302,21 @@ After changing any of the configuration files you have to restart the service:
 
 **XDMCP** is a protocol for the desktop environment's graphical login window
 
+The **xsession-errors**, which is actually a hidden file in a user's home directory (`~/.xsession-errors`), contains display manager errors.
+
+`xauth` utility displays the authorization information used when connecting to a remote X11 server.
+
+**Modules section** in an X11 configuration handles which **device drivers** to load
+
+display managers like `XDM` and `KMD` -> Handle user login and prepares desktop environment for the user
+
 **GDM** is the display manager software for the GNOME desktop environment
 
-The **xsession-errors**, which is actually a hidden file in a user's home directory (~/.xsession-errors), contains display manager errors
-xauth utility displays the authorization information used when connecting to a remote X11 server
+`XDM` is the default graphical login manager that comes with vanilla X11. Default wallpaper -> `/etc/X11/xdm/Xsetup` 
 
-**Modules section** in an X11 configuration handles which device drivers to load
+`/etc/X11/xorg.conf.d` content in `xorg.conf` (X11 config file) in the section "SectionName" is placed between a line cointaining Section "SectionName" and a line containing EndSection
+
+`xwininfo` shows current color Depth of the X Server, investigates properties for a particular window in X
 
 ## NETWORKING
 - /etc/sysconfig/network-scripts/
@@ -336,6 +361,8 @@ ip command objects:
 - `sudo ip route add default via 172.30.208.1` adds a route to default gateway (172.30.208.1)
 
 ## NETWORK MANAGER
+NetworkManager must be specifically activated on interfaces it is intended to manage.
+
 - `nmcli general` status
 - `nmcli gen` same
 - `nmcli -p conn show` show connection profiles
@@ -368,59 +395,35 @@ ip command objects:
 - `host -a www.google.com` DNS resolution, queries dns servers to get IP. -a provides resolution time
 - `dig @1.1.1.1 www.lpi.org` DNS resolution, querying 1.1.1.1 name server
 
-## EXAM 
+## EXAM
+Sticky Keys feature enables keyboard shortcuts to be performed sequentially rather than simultaneously
+
+`GOK` -> on-screen keyboard
+
 `sudo find /etc -name "locale" -print`
-
-`useradd -m` # creates a new user's home dir and provisions with skel files
-
-`SPICE` proto Access video card output of a VM
-
-`NetworkManager` can be configured to use the distro NIC config and by default does not change config of NI already configured
-
-display managers like `XDM` and `KMD` -> Handle user login and prepares desktop environment for the user
-
-`XDM` is the default graphical login manager that comes with vanilla X11. Default wallpaper -> `/etc/X11/xdm/Xsetup` 
-
-content in `xorg.conf` (X11 config file) in the section "SectionName" is placed between a line cointaining Section "SectionName" and a line containing EndSection
-
-`xwininfo` shows current color Depth of the X Server, investigates properties for a particular window in X
 
 `.bashrc` and `.bash_pro` affect the behavior of the Bash Shell
 
 `env -u FOO./myscript` suppresses FOO environment var for the execution of myscript
 
-`ssh-agent` preloads and manages keys
-
 The default route is only used if there is not a more specific route to a destination host or network
-
-`GOK` -> on-screen keyboard
-
-`ssh -p 2222 example.com`, `ssh -o Port=2222 example.com` connect to a specific ssh port (e.g. 2222)
-
-SPICE:
-- Lets you connect local USB into a remote app
-- Downloads and installs local apps from a remote machine
 
 `export VARIABLE` make it available to subshells
 
 /`etc/xinetd.conf` enable/disable network services
 
-display NIC eth0 bytes transmitted -> `ifconfig eth0` and `ip -s link show eth0`
+display NIC eth0 **bytes transmitted** -> `ifconfig eth0` and `ip -s link show eth0`
 
-if `cron.allow` and `cron.deny` do not exist the behavior depends on the distro. On most distros only root user can create cron Jobs, in some distros all users can create cron Jobs.
+if `cron.allow` and `cron.deny` do not exist the behavior depends on the distro. On most distros only root user can create cron Jobs. If `cron.allow` does not exist and `cron.deny` is empty -> All users can schedule cron jobs
 
 - `test -z` # test if a variable is empty (true)
-- `test -n` # test if there is content in the string or string variable
+- `test -n` # test if there is content (not empty) in the string or string variable
 - `test -x` # test if file is executable by user
 
 `hostnamectl set-hostname` modern systems
 
 `hostname newname` old systems
 
-nmcli network connectivity: none, portal, limited, full, unknown
+`nmcli` network connectivity: none, portal, limited, full, unknown
 
 `traceroute` sends **UDP** packets
-
-`ssh -L 4672:www.example.com:80` localhost forward local port 4672
-
-`lprm 5` removes job 5, the printer name is not required
