@@ -287,10 +287,14 @@ Memorize the facility numbers for each service
 `ssh -L 4672:www.example.com:80` localhost forward local port 4672
 
 ## WINDOWS
+`XDMCP`, `VNC`, `RDP` (natively supported by Linux and Windows) and `Spice` are remote access protocols for connecting to remote X servers.
+
 SPICE:
+- Specialized protocol for connecting to remote VM with X11
 - Lets you connect local USB into a remote app
 - SPICE facilitates access to graphical applications on a remote server by providing high-quality, low-latency video and audio streaming capabilities for a smooth user experience
 - `SPICE` proto Access video card output of a VM
+- File sharing between local and remote systems
 
 After changing any of the configuration files you have to restart the service:
 - `service <displaymanagername> restart` SysVinit
@@ -317,6 +321,10 @@ display managers like `XDM` and `KMD` -> Handle user login and prepares desktop 
 `/etc/X11/xorg.conf.d` content in `xorg.conf` (X11 config file) in the section "SectionName" is placed between a line cointaining Section "SectionName" and a line containing EndSection
 
 `xwininfo` shows current color Depth of the X Server, investigates properties for a particular window in X
+
+Modification of a keyboard’s layout within an Xorg installation with setxkbmap and `localectl`
+
+`xdpyinfo` command is used on a computer to display information about a running `X server instance`
 
 ## NETWORKING
 - /etc/sysconfig/network-scripts/
